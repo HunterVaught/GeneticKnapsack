@@ -4,7 +4,15 @@ import random
 #fitness function
 def fitness(individual, data):
        #evaluate that individual somehow
-       score = random.randint(0,100)
+       
+       value = 0
+       weight = 0
+       for i in range(100):
+              if(individual[i] == 1):
+                     value += data[i+1][2]
+                     weight += data[i+1][1]
+       
+       score = value/weight
        return score
 
 #quicksort implementation
@@ -63,3 +71,4 @@ print("[" + initScores[0])
 for i  in range(1, 100):
        print(initScores[i] + ",")
 print("]\n")
+
