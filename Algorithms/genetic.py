@@ -5,7 +5,6 @@ bestVal = 0
 
 #fitness function
 def fitness(individual, data, maxWeight, avgRatio, avgVal):
-       #evaluate that individual somehow
        value = 0
        weight = 0
        for i in range(len(individual)):
@@ -13,7 +12,7 @@ def fitness(individual, data, maxWeight, avgRatio, avgVal):
                      value += int(data[i+1][2])
                      weight += int(data[i+1][1])
        
-       print("Evaluating fitness, value: ",value," weight: ",weight," avgVal: ",avgVal)
+       print("Evaluating fitness, value: ",value," weight: ",weight," avgVal: ",avgVal, " maxWeight ", maxWeight)
        
        #edge case
        if(weight == 0):
@@ -21,14 +20,19 @@ def fitness(individual, data, maxWeight, avgRatio, avgVal):
        
        score = value/avgVal
        
+       if(float(weight)/maxWeight > 0.5 and float(weight) < maxWeight):
+              score += .5
+       
        if(score >= 1):
               score -= 1
               score *= 10
               score += 1
-       else:
-              temp = 1 - score
-              temp *= 10
-              score -= temp
+       
+       score += float(random.randint(0,1))/10
+       # else:
+       #        temp = 1 - score
+       #        temp *= 10
+       #        score -= temp
        
        global bestVal
        if weight > maxWeight:
@@ -37,6 +41,8 @@ def fitness(individual, data, maxWeight, avgRatio, avgVal):
               if(value > bestVal):
                      bestVal = value
        
+       print("Score",score)
+       print("Current Best Value",bestVal)
        return score
 
 #quicksort implementation
@@ -66,7 +72,7 @@ def read_file(filename):
                     data.append(list(map(str, line.strip().split(','))))
         return data
 
-filename = "Datasets/knapsack_testcases-final/test100.kp"
+filename = "Datasets/knapsack_testcases-final/test400.kp"
 oData = read_file(filename)
 
 numItems = oData[0][0]
@@ -103,20 +109,21 @@ for i in range(100):
               currScores[i] = 0
        else:
               currScores[i] = fitness(currPop[i], oData, maxWeight, float(totalValue)/totalWeight, float(totalValue)/100)
-print(currScores)
+# print(currScores)
 
 
 quickSort(currScores, 0, 99, currPop)
 
 best = currPop[0]
 
-print("\n\nAfter sorting\n\n")
+# print("\n\nAfter sorting\n\n")
 
 
-print(currScores)
+# print(currScores)
 
 #All other generations
-for i in range(199):
+for k in range(199):
+       print("In ",k," generation")
        #build intermediate population using remainder stochastic sampling
        midPop = [[0 for i in range(cols)] for j in range(rows)]
        
@@ -141,7 +148,7 @@ for i in range(199):
                      popLeft += 1
               count += 1
        
-       print("\n\nNew intermediate population\n\n")
+       #print("\n\nNew intermediate population\n\n")
        
        #built new current population through recombination
        count = 0
@@ -151,7 +158,7 @@ for i in range(199):
               donor2 = midPop[random.randint(0, 99)]
               
               #randomly recombine or pass parents through unchanged
-              if(random.randint(0,3) == 1):
+              if(random.randint(0,10) == 1):
                      currPop[count] = donor1
                      currPop[count + 1] = donor2
               
@@ -185,8 +192,8 @@ for i in range(199):
               #after children are created, count += 2 to prep for next children
               count += 2
 
-       for i in range(100):
-              print(currPop[i])
+       # for i in range(100):
+       #        print(currPop[i])
 
        #recalculate fitness
        totalValue = 0
@@ -204,16 +211,16 @@ for i in range(199):
                      currScores[i] = 0
               else:
                      currScores[i] = fitness(currPop[i], oData, maxWeight, float(totalValue)/totalWeight, float(totalValue)/100)
-       print(currScores)
+       #print(currScores)
 
 
        quickSort(currScores, 0, 99, currPop)
 
        best = currPop[0]
 
-       print("\n\nAfter sorting\n\n")
+       #print("\n\nAfter sorting\n\n")
 
 
-       print(currScores)
+       #print(currScores)
 
 print("The highest value found was ", bestVal)
